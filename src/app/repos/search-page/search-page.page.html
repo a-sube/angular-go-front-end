@@ -1,0 +1,57 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/repos"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Search results</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-grid>
+    <ion-row>
+      <ion-col size-xl="8" offset-xl="2" size-lg="10" offset-lg="1">
+
+        <!-- <ion-item *ngFor="let repo of searchResults | async">
+          <ion-avatar slot="start">
+            <img src="{{repo.avatar_url}}">
+          </ion-avatar>
+          <ion-label>
+            <h2>{{ repo.full_name }}</h2>
+            <p color="tertiary">{{ repo.description }}</p>
+
+            <p>
+              <ion-text>
+                <ion-icon name="star"></ion-icon>{{ repo.stargazers_count }}
+                <ion-icon name="git-network"></ion-icon>{{ repo.forks_count }}
+              </ion-text>
+            </p>
+          </ion-label>
+        </ion-item> -->
+
+
+        <ion-virtual-scroll [items]="searchResults | async">
+          <!-- [routerLink]="[]" -->
+          <ion-item *virtualItem="let repo" detail [routerLink]="['/', 'repos', 'detail', repo.ID]">
+            <ion-avatar slot="start">
+              <img src="{{repo.avatar_url}}">
+            </ion-avatar>
+            <ion-label>
+              <h2>{{ repo.full_name }}</h2>
+              <p color="tertiary">{{ repo.description }}</p>
+
+              <p>
+                <ion-text>
+                  <ion-icon name="star"></ion-icon>{{ repo.stargazers_count }}
+                  <ion-icon name="git-network"></ion-icon>{{ repo.forks_count }}
+                </ion-text>
+              </p>
+            </ion-label>
+          </ion-item>
+        </ion-virtual-scroll>
+
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-content>
+<app-search-cmpt></app-search-cmpt>

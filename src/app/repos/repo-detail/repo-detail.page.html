@@ -1,0 +1,107 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/repos"></ion-back-button>
+    </ion-buttons>
+    <ion-title *ngIf="!repoLoading">{{ repo.name }}</ion-title>
+    <ion-title *ngIf="repoLoading">Details</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-progress-bar color="primary" *ngIf="repoLoading" type="indeterminate"></ion-progress-bar>
+  <ion-grid>
+    <ion-row>
+      <ion-col size-xl="8" offset-xl="2" size-lg="10" offset-lg="1">
+        <ion-segment (ionChange)="onSegmentChange($event)">
+          <ion-segment-button value="infoPage" checked>Info</ion-segment-button>
+          <ion-segment-button value="modulesPage">Modules</ion-segment-button>
+          <ion-segment-button value="treePage">Tree</ion-segment-button>
+        </ion-segment>
+      </ion-col>
+    </ion-row>
+
+    <ion-row>
+      <ion-col size-xl="8" offset-xl="2" size-lg="10" offset-lg="1">
+        <div *ngIf="!repoLoading">
+          <ion-item lines="none">
+            <ion-avatar slot="start">
+              <img src="{{repo.avatar_url}}">
+            </ion-avatar>
+            <ion-label>
+              <h2>{{ repo.full_name }}</h2>
+              <p>
+                <ion-text>
+                  <ion-icon name="star"></ion-icon>{{ repo.stargazers_count }}
+                  <ion-icon name="git-network"></ion-icon>{{ repo.forks_count }}
+                </ion-text>
+              </p>
+            </ion-label>
+            <ion-fab-button size="small" href="{{repo.html_url}}" target="_blank" color="dark">
+              <ion-icon name="logo-github"></ion-icon>
+            </ion-fab-button>
+          </ion-item>
+        </div>
+      </ion-col>
+    </ion-row>
+
+    <ion-row *ngIf="infoPage">
+      <ion-col size-xl="8" offset-xl="2" size-lg="10" offset-lg="1">
+        <div *ngIf="!repoLoading && !readmeLoading" padding [innerHTML]="readme | angularify:repo.full_name:repo.ID">
+        </div>
+
+        <div *ngIf="repoLoading" padding>Fetching modules...</div>
+      </ion-col>
+    </ion-row>
+
+
+
+    <ion-row *ngIf="modulesPage">
+      <ion-col size-xl="8" offset-xl="2" size-lg="10" offset-lg="1">
+        <p>
+          <ion-text color="primary"><a [href]="modfile" target="_blank">source go.mod file</a></ion-text>
+        </p>
+        <div *ngIf="!repoLoading" padding>
+
+          <ion-virtual-scroll [items]="repo.modules">
+            <ion-item *virtualItem="let module" detail [routerLink]="['/', 'repos', 'detail', module.ID]">
+              <ion-avatar slot="start">
+                <img src="{{module.avatar_url}}">
+              </ion-avatar>
+              <ion-label>
+                <h2>{{ module.full_name }}</h2>
+                <p color="tertiary">{{ module.description }}</p>
+                <p>
+                  <ion-text>
+                    <ion-icon name="star"></ion-icon>{{ module.stargazers_count }}
+                    <ion-icon name="git-network"></ion-icon>{{ module.forks_count }}
+                  </ion-text>
+                </p>
+              </ion-label>
+            </ion-item>
+          </ion-virtual-scroll>
+        </div>
+      </ion-col>
+    </ion-row>
+
+    <ion-row *ngIf="treePage">
+      <ion-col size-xl="8" offset-xl="2" size-lg="10" offset-lg="1">
+        <div *ngIf="!repoLoading && !readmeLoading">
+          <ion-item lines="none">
+            <ion-range min="1" max="5" step="1" [value]="level" snaps color="primary" debounce="500"
+              (ionChange)="onRangeChange($event)">
+              <ion-icon size="small" slot="start" name="remove"></ion-icon>
+              <ion-icon size="small" slot="end" name="add"></ion-icon>
+            </ion-range>
+          </ion-item>
+          <ion-text color="primary"><a [href]="modfile" target="_blank">source go.mod file</a></ion-text>
+          <div padding [innerHTML]="modulesTree()"></div>
+        </div>
+
+      </ion-col>
+    </ion-row>
+
+  </ion-grid>
+</ion-content>
+
+<app-search-cmpt></app-search-cmpt>
